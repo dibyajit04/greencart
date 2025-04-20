@@ -1,0 +1,59 @@
+CommonJS (Node.js)
+Exporting:
+
+Use module.exports to export values (functions, objects, etc.).
+
+
+// Exporting a function
+module.exports = function greet(name) {
+  return `Hello, ${name}`;
+};
+
+// Exporting multiple things
+module.exports = {
+  greet,
+  add: (a, b) => a + b,
+};
+Importing:
+
+Use require() to import the exported values.
+
+
+const greet = require('./greet');
+console.log(greet('John')); // "Hello, John"
+ES Modules (Modern JavaScript)
+Exporting:
+
+Named Exports: You can export multiple items.
+
+
+// Named export
+export const greet = (name) => `Hello, ${name}`;
+export const add = (a, b) => a + b;
+Default Export: You can export one item as the default.
+
+
+// Default export
+const greet = (name) => `Hello, ${name}`;
+export default greet;
+Importing:
+
+Named Import: Import specific items from a module.
+
+
+
+import { greet, add } from './utils.js';
+console.log(greet('John')); // "Hello, John"
+Default Import: Import the default export from a module.
+
+
+import greet from './utils.js';
+console.log(greet('John')); // "Hello, John"
+Summary
+
+Action	CommonJS	ES Modules
+Exporting (1 item)	module.exports = ...	export default ...
+Exporting (multiple items)	module.exports = {...}	export const ... (named)
+Importing (1 item)	const x = require('...')	import x from '...'
+Importing (multiple items)	const { x } = require('...')	import { x } from '...'
+This is the simplest breakdown for exporting and importing in CommonJS vs ES Modules!
