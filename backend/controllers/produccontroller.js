@@ -22,7 +22,7 @@ const addtocart=async(req,res)=>{
         //FIND OR CREATE A CART
         let cart=await Cart.findOne({user:userId})
        if(!cart){
-           cart= new Cart({user:userId,items:{}})//CHECK SCHEMA OF CART ON HOW TO ADD USERID
+           cart= new Cart({user:userId,items:[]})//CHECK SCHEMA OF CART ON HOW TO ADD USERID
     }
 
        //REFER TO THE SCHEMA OF THE CART DATABSE TO UNDERSTAND THE STRUCTURE 
@@ -63,6 +63,7 @@ const addtocart=async(req,res)=>{
           if(!cart){
             return res.status(404).json({msg:"CART NOT FOUND"})
           }
+          return res.status(200).json({cart})
         }
         catch(err){
           res.status(500).json({message:err.message})
