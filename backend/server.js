@@ -35,7 +35,7 @@ app.use((err, req, res, next) => {
   console.error('Error: ', err.message); // Log error message
   res.status(500).json({ msg: 'Internal Server Error' }); // Return a generic 500 response for errors
 });
-
+console.log("hell0000jhvyvvhvh0")
 // Server initialization
 const PORT = process.env.PORT || 5000 ;
 app.listen(PORT, () => {
