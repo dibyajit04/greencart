@@ -129,6 +129,13 @@ catch(err){
 }
 
 
+module.exports={
+    addtocart,
+    getCart,
+    removefromCart,
+    updateCart
+}
+
 /**Function	                What it does
 addToCart             	Adds/increases a product in the user's cart
 getCart	               Retrieves all items in the user's cart
