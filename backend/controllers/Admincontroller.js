@@ -59,6 +59,7 @@ const adminSignin=async(req,res)=>{
         return res.status(401).json({msg:"UNAUTHORIZED NOT AN ADMIN"})//401=unauthorized
     }
     const ismatch=await checkpassword(details.password,existing.password)
+    console.log(details.password,existing.password)
     if(!ismatch){
         return res.status(404).json({msg:"INCORRECT PASSWORD"})
     }

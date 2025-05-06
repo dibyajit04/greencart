@@ -9,12 +9,16 @@ const addtocart=async(req,res)=>{
         //MIDDLEWARE HAS THE ID ASTOKEN IS SIGNED USING USER._ID AND ROLE REQ{USER:{ID:???,ROLE:????}} SO TO GET ID REQ.USER.ID
         const userId=req.user.id;
         const{productId,quantity}=req.body;
-
-
+    
         //CHECK IF PRODUCT EXIST IN PRODUCT DATABASE
         const product=await Product.findById(productId)
         if(!product){
             return res.status(404).json({msg:"PRODUCT NOT FOUND"})
+        }
+
+        //CHECK IF STOCK IS PRESENT
+        if(product.stock<quantity){
+            return res.status(400).json({msg:"NOT ENOUGH STOCK AVAILABLE"})
         }
         
 

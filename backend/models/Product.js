@@ -12,7 +12,7 @@ const Product=new mongoose.Schema({
     },
 
     price:{
-        type:String,
+        type:Number,
         required:true
     },
     category:{
@@ -20,7 +20,12 @@ const Product=new mongoose.Schema({
         enum:["Fruits","Vegetables"],
         required:true
     },
-    imageURL:String
+    imageURL:String,
+    stock:{
+        type:Number,
+        required:true,
+        min:0,
+    }
 })
 const Producttable=mongoose.model("Product",Product)
 

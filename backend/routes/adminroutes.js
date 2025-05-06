@@ -12,12 +12,7 @@ router.post('/signin', adminSignin);
 router.post('/add-product', authenticate, authorizeadmin, addproduct);
 router.delete('/delete-product/:productID', authenticate, authorizeadmin, deleteproduct);
 
-/*console.log('authenticate:', typeof authenticate);
-console.log('authorizeadmin:', typeof authorizeadmin);
-console.log('adminSignup:', typeof adminSignup);
-console.log('adminSignin:', typeof adminSignin);
-console.log('addproduct:', typeof addproduct);
-console.log('deleteproduct:', typeof deleteproduct);*/
+
 
 module.exports = router;
 

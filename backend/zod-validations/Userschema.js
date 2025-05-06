@@ -14,9 +14,10 @@ const adminSigninschema=z.object({
 const addProductschema = z.object({
     name: z.string().min(4),
     description: z.string().optional(),
-    price: z.string().min(3),
+    price: z.number().min(3),
     category: z.enum(['Fruits', 'Vegetables']),
-    imageURL: z.string().url()
+    imageURL: z.string().url(),
+    stock:z.number()
   });
   
   module.exports={
