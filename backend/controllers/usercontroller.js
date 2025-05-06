@@ -1,7 +1,7 @@
 const Customer=require("../models/User")
 
 const {hashpassword,checkpassword,generatetoken,findUserbyemail}=require("../Userservice")
-const {customerSigninschema,customerSignupschema}=require("../zod-validations/Customerschema")
+const {customerSigninschema,customerSignupschema,updateUserProfile}=require("../zod-validations/Customerschema")
 
 const z=require("zod")
 
@@ -74,8 +74,52 @@ const customerSignin=async(req,res)=>{
     }
  }
 
+ const updateUserProfile = async (req, res) => {
+    try {
+        const details = req.body;
+        
+        // Validate with Zod
+        const check = userUpdateSchema.safeParse(details);
+        if (!check.success) {
+            return res.status(400).json({ 
+                msg: "INVALID UPDATE DATA", 
+                errors: check.error.errors 
+            });
+        }
+        
+        // Proceed with update
+        const user = await User.findByIdAndUpdate(
+            req.user.id,
+            { $set: details },
+            { new: true }
+        ).select('-password');
+        
+        res.status(200).json({
+            msg: "Profile updated successfully",
+            user
+        });
+    } catch (err) {
+        res.status(500).json({ msg: "Error updating profile", error: err.message });
+    }
+};
+
+const getUserProfile = async (req, res) => {
+    try {
+        // req.user.id comes from your authenticate middleware
+        const user = await User.findById(req.user.id).select('-password');
+        if (!user) {
+            return res.status(404).json({ msg: "User not found" });
+        }
+        res.status(200).json(user);
+    } catch (err) {
+        res.status(500).json({ msg: "Error fetching profile", error: err.message });
+    }
+};
+
 
  module.exports={
     customerSignin,
-    customerSignup
+    customerSignup,
+    updateUserProfile,
+    getUserProfile
  }

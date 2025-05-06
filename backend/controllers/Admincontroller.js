@@ -1,8 +1,8 @@
 const User=require("../models/User")
-const Product=require("../models/Product") //can use just product
+const Order=require("../models/Order") 
 
 const {hashpassword,checkpassword,generatetoken,findUserbyemail}=require("../Userservice")
-const {adminSignupschema,adminSigninschema,addProductschema} =require("../zod-validations/Userschema")
+const {adminSignupschema,adminSigninschema} =require("../zod-validations/Userschema")
 const z=require("zod")
 
 console.log("NOT")
@@ -78,53 +78,35 @@ const adminSignin=async(req,res)=>{
    }
 }
 
-//ADDPRODUCT
 
-const addproduct=async(req,res)=>{
-    const details=req.body;
-    const check=addProductschema.safeParse(details)
-    if(!check.success){
-      return res.status(400).json({msg:"INVALID PRODUCT CREDENTIALS"}) //400=bad request
+// Get all orders (admin only)
+exports.getAllOrders = async (req, res) => {
+    try {
+        // Fetch all orders with customer and product details
+        const orders = await Order.find()
+            .populate('user', 'name email')
+            .populate('items.product');
+            
+        const totalAmount = orders.reduce((sum, order) => sum + order.total, 0);
+        
+        res.status(200).json({
+            success: true,
+            totalAmount,
+            count: orders.length,
+            orders
+        });
+    } catch (err) {
+        res.status(500).json({ 
+            msg: "Error fetching orders", 
+            error: err.message 
+        });
     }
-    try{
-        const product=await Product.create(details)
-    return res.status(200).json({msg:"PRODUCT ADDED SUCCESFULLY",
-        product:{
-        _id:product._id,
-        name:product.name,
-        description:product.description,
-        price:product.price,
-        category:product.category,
-        imageURL:product.imageURL}
-    })
-    }
-    catch(error){
-        return res.status(500).json({msg:"ERROR IN ADDING PRODUCT",error:error.message}) //500=internal server error
+};
 
-    }
-   
-}
-
-//DELETEPRODUCT
-
-
-const deleteproduct=async(req,res)=>{
-    const {productID}=req.params;
-    try{
-        const remove=await Product.findByIdAndDelete(productID)
-        if(!remove){
-            return res.status(404).json({msg:"PRODUCT DOESNT EXIST"})
-        }
-        return res.status(200).json({msg:"PRODUCT DELETED SUCCESFULLY",deletedproduct:remove})
-    }
-    catch(error){
-        return res.status(500).json({msg:"ERROR IN DELETING PRODUCT",error:error.message})//500=internal server error
-    }
-}
 
 module.exports={
     adminSignin,
     adminSignup,
-    addproduct,
-    deleteproduct
+    getAllOrders
+    
 }

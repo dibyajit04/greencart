@@ -6,7 +6,7 @@ const getAllproducts = async (req, res) => {
         // Pagination parameters from query string, with defaults
         const page = parseInt(req.query.page) || 1;      // Current page number
         const limit = parseInt(req.query.limit) || 10;   // Products per page
-        const skip = (page - 1) * limit;                 // How many to skip
+        const skip = (page - 1) * limit;                 // How many to skip if in 3 page we need to skip first 2 pages
 
         // Your existing search/filter/sort logic
         const { name, category, minPrice, maxPrice, sort } = req.query;
@@ -31,7 +31,8 @@ const getAllproducts = async (req, res) => {
         if (sort === 'name_desc') sortOption.name = -1;
 
         // Get paginated products
-        const products = await Product.find(query)
+        const products = await Product.find(query)        //PASS LIK THIS http://localhost:8000/api/products?name=apple&sort=price_desc&page=1&limit=10
+
             .sort(sortOption)
             .skip(skip)
             .limit(limit);
