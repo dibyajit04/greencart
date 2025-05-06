@@ -1,15 +1,92 @@
 const Product =require("../models/Product")
 const  {addProductschema} =require("../zod-validations/Userschema")
 
-const getAllproducts=async(req,res)=>{
-    try{
-        const products= await Product.find()
-        return res.status(200).json(products)
+const getAllproducts = async (req, res) => {
+    try {
+        // Pagination parameters from query string, with defaults
+        const page = parseInt(req.query.page) || 1;      // Current page number
+        const limit = parseInt(req.query.limit) || 10;   // Products per page
+        const skip = (page - 1) * limit;                 // How many to skip
+
+        // Your existing search/filter/sort logic
+        const { name, category, minPrice, maxPrice, sort } = req.query;
+        const query = {};
+
+        if (name) {
+            query.name = { $regex: name, $options: 'i' };
+        }
+        if (category) {
+            query.category = category;
+        }
+        if (minPrice || maxPrice) {
+            query.price = {};
+            if (minPrice) query.price.$gte = Number(minPrice);
+            if (maxPrice) query.price.$lte = Number(maxPrice);
+        }
+
+        let sortOption = {};
+        if (sort === 'price_asc') sortOption.price = 1;
+        if (sort === 'price_desc') sortOption.price = -1;
+        if (sort === 'name_asc') sortOption.name = 1; 
+        if (sort === 'name_desc') sortOption.name = -1;
+
+        // Get paginated products
+        const products = await Product.find(query)
+            .sort(sortOption)
+            .skip(skip)
+            .limit(limit);
+
+        // Get total count for pagination info
+        const total = await Product.countDocuments(query);
+
+        return res.status(200).json({
+            products,
+            pagination: {
+                total,
+                page,
+                pages: Math.ceil(total / limit)
+            }
+        });
+    } catch (err) {
+        return res.status(500).json({ msg: "ERROR IN GETTING ALL PRODUCT", error: err.message });
     }
-    catch(err){
-        return res.status(500).json({msg:"ERROR IN GETTING ALL PRODUCT",error:err.message})
-    }
-}
+};
+
+/**
+ 
+const { name, category, minPrice, maxPrice } = req.query;
+Get search/filter values from the URL (like /api/products?name=apple&minPrice=10).
+
+const query = {};
+Start with an empty query object to build your search filters.
+
+if (name) { query.name = { $regex: name, $options: 'i' }; }
+If a name is given, add a case-insensitive partial match for product names.
+
+if (category) { query.category = category; }
+If a category is given, filter products in that category.
+
+if (minPrice || maxPrice) { ... }
+If a price range is given, add price filters:
+
+if (minPrice) query.price.$gte = Number(minPrice);
+Set minimum price (greater than or equal).
+
+if (maxPrice) query.price.$lte = Number(maxPrice);
+Set maximum price (less than or equal).
+
+const products = await Product.find(query);
+Search the database for products matching all the above filters.
+
+return res.status(200).json(products);
+Send the found products as a JSON response.
+
+catch (err) { ... }
+If anything goes wrong, return a 500 error and the error message.
+
+
+*/
+
 
 const getProductbyId=async(req,res)=>{
     try{
